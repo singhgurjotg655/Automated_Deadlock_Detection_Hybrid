@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deadlock Guard | Operating Systems</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">DG</span><div><strong>Deadlock Guard</strong><small>OPERATING SYSTEMS LAB</small></div></div>
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav active" data-page="dashboard">▦ <span>Dashboard</span></button>
+    <button class="nav" data-page="setup">⚙ <span>System Setup</span></button>
+    <button class="nav" data-page="matrices">▤ <span>Resource Matrices</span></button>
+    <button class="nav" data-page="graph">◇ <span>Dependency Graph</span></button>
+    <button class="nav" data-page="analysis">◉ <span>Detection Analysis</span></button>
+    <button class="nav" data-page="recovery">✦ <span>Recovery Suggestions</span></button>
+    <button class="nav" data-page="history">◷ <span>Analysis History</span></button>
+    <div class="sidebar-foot"><span class="status-dot"></span> Local simulation environment</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar"><div><span class="eyebrow">CSE316 / PROJECT WORKSPACE</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-right"><span class="live"><i></i> ENGINE READY</span><span class="avatar">OS</span></div></header>
+
+    <section class="page show" id="dashboard">
+      <div class="hero"><div><span class="eyebrow light">AUTOMATED SYSTEM ANALYSIS</span><h2>Understand resource conflicts.<br><em>Detect deadlocks.</em></h2><p>Configure processes, inspect resource dependencies and run the C++ detection engine.</p><button class="primary" data-go="setup">Configure system <b>→</b></button></div><div class="hero-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="core">DG</div><span class="node n1">P1</span><span class="node n2">R1</span><span class="node n3">P2</span><span class="node n4">R2</span></div></div>
+      <div class="stat-grid"><article class="stat"><span>PROCESSES</span><strong id="statProcesses">3</strong><small>Configured processes</small></article><article class="stat"><span>RESOURCE TYPES</span><strong id="statResources">3</strong><small>Distinct resource classes</small></article><article class="stat"><span>AVAILABLE INSTANCES</span><strong id="statAvailable">0</strong><small>Calculated from allocation</small></article><article class="stat"><span>LAST ANALYSIS</span><strong class="stat-status" id="statStatus">Pending</strong><small>Current system snapshot</small></article></div>
+      <div class="section-head"><div><span class="eyebrow">GET STARTED</span><h3>Quick scenarios</h3></div><span class="muted">Load an example to explore the tool</span></div>
+      <div class="scenario-grid"><article class="scenario"><div class="scenario-icon danger">↻</div><h3>Circular wait example</h3><p>Three processes each hold one resource and request the next resource in a cycle.</p><button class="secondary" id="loadDeadlock">Load deadlock scenario →</button></article><article class="scenario"><div class="scenario-icon safe">✓</div><h3>Safe execution example</h3><p>A resource snapshot where processes can finish in a valid sequence.</p><button class="secondary" id="loadSafe">Load safe scenario →</button></article></div>
+      <div class="note"><strong>Project scope</strong><p>This application analyzes a manually configured resource snapshot. It demonstrates the operating-system deadlock detection algorithm; it does not monitor or terminate real Windows processes.</p></div>
+    </section>
+
+    <section class="page" id="setup">
+      <div class="section-head"><div><span class="eyebrow">STEP 01</span><h2>System configuration</h2><p class="muted">Choose the number of processes and resource types.</p></div></div>
+      <div class="panel form-panel"><div class="form-row"><label>Number of processes<input id="processCount" type="number" min="1" max="20" value="3"></label><label>Number of resource types<input id="resourceCount" type="number" min="1" max="20" value="3"></label></div><div class="section-head compact"><h3>Resource definitions</h3><span class="muted">Total instances of each resource</span></div><div id="resourceDefinitions" class="resource-defs"></div><div class="actions"><button class="primary" id="applySetup">Apply configuration</button><span class="muted" id="setupMessage">Applying configuration resets matrix values.</span></div></div>
+    </section>
+
+    <section class="page" id="matrices">
+      <div class="section-head"><div><span class="eyebrow">STEP 02</span><h2>Resource matrices</h2><p class="muted">Enter allocated instances and outstanding requests for each process.</p></div><button class="secondary" id="saveMatrices">Save matrix values</button></div>
+      <div class="matrix-grid"><div class="panel"><div class="panel-title"><div><span class="eyebrow">CURRENT OWNERSHIP</span><h3>Allocation matrix</h3></div><span class="tag green">Allocated</span></div><div id="allocationTable"></div></div><div class="panel"><div class="panel-title"><div><span class="eyebrow">PENDING NEEDS</span><h3>Request matrix</h3></div><span class="tag amber">Requested</span></div><div id="requestTable"></div></div></div>
+      <div class="note"><strong>Available resources</strong><p>Available[j] = Total[j] − sum of Allocation[i][j]. Values must be non-negative whole numbers and allocated totals cannot exceed resource totals.</p></div>
+    </section>
+
+    <section class="page" id="graph">
+      <div class="section-head"><div><span class="eyebrow">STEP 03</span><h2>Dependency graph</h2><p class="muted">A visual overview of process-resource allocation and request relationships.</p></div><button class="secondary" id="refreshGraph">Refresh graph</button></div>
+      <div class="panel graph-panel"><div class="legend"><span><i class="line allocation"></i> Allocation: Resource → Process</span><span><i class="line request"></i> Request: Process → Resource</span></div><div id="graphCanvas"></div></div>
+      <p class="muted graph-note">The matrix-based detection result is authoritative for resource types with multiple instances. The graph is a simplified visual aid.</p>
+    </section>
+
+    <section class="page" id="analysis">
+      <div class="section-head"><div><span class="eyebrow">STEP 04</span><h2>Detection analysis</h2><p class="muted">Run the C++ Work/Finish algorithm on the current resource snapshot.</p></div><button class="primary" id="runDetection">▶ Run detection</button></div>
+      <div id="resultBanner" class="result-banner neutral"><span class="result-symbol">◎</span><div><strong>Analysis not started</strong><p>Save your matrices and run the detection engine.</p></div></div>
+      <div class="panel"><div class="panel-title"><div><span class="eyebrow">ALGORITHM EXECUTION</span><h3>Detection trace</h3></div><span class="tag">C++ engine output</span></div><ol id="traceList" class="trace-list"><li>Waiting for analysis.</li></ol></div>
+      <div class="panel sequence-panel"><span class="eyebrow">COMPLETION ORDER</span><div id="sequence" class="sequence">No sequence available.</div></div>
+    </section>
+
+    <section class="page" id="recovery">
+      <div class="section-head"><div><span class="eyebrow">STEP 05</span><h2>Recovery suggestions</h2><p class="muted">Possible strategies when processes remain unfinished.</p></div></div>
+      <div id="recoveryState" class="note"><strong>Run detection first</strong><p>Recovery guidance will be based on the unfinished processes reported by the C++ engine.</p></div>
+      <div class="recovery-grid"><article class="panel"><span class="recovery-number">01</span><h3>Process termination</h3><p>Terminate one process involved in the deadlock to release its allocated resources. Process priority and lost work should be considered.</p></article><article class="panel"><span class="recovery-number">02</span><h3>Resource preemption</h3><p>Take a resource from a selected process where safe and supported, then reassign it to help another process proceed.</p></article><article class="panel"><span class="recovery-number">03</span><h3>Rollback and retry</h3><p>Restore a process to a previous checkpoint and restart it later. This requires checkpoint support.</p></article></div>
+      <p class="muted graph-note">These are advisory strategies. The simulator does not modify actual operating-system processes.</p>
+    </section>
+
+    <section class="page" id="history">
+      <div class="section-head"><div><span class="eyebrow">SESSION RECORD</span><h2>Analysis history</h2><p class="muted">Detection runs performed during this browser session.</p></div><button class="secondary" id="clearHistory">Clear history</button></div>
+      <div class="panel"><div id="historyList" class="history-list"><p class="muted">No analyses recorded yet.</p></div></div>
+    </section>
+    <footer>DEADLOCK GUARD <span>·</span> C++ DETECTION ENGINE <span>·</span> OPERATING SYSTEMS PROJECT</footer>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
